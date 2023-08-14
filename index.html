@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>NARDA Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="./style.css" />
+    <script type="module" src="./index.js"></script>
+    <script
+      defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDmM50GneHSJvMwn_xX4RBDAk8VoAtnUIs&callback=initMap&libraries=marker&v=beta"
+    ></script>
+    <script type="application/javascript">
+      const requestURL = 'http://speelow.ivyro.net/count.php/';
+      const xhr = new XMLHttpRequest();
+      
+      setInterval(function() {
+        console.log('db 로드');
+        xhr.open('GET', requestURL);
+        xhr.onload = () => {
+          var json = JSON.parse(xhr.response);
+      
+          document.querySelector("#proceeding").textContent = '진행중인 배달 건수 : ' + json[0].count;
+          document.querySelector("#completed").textContent = '오늘 완료한 배달 건수 : ' + json[1].count;
+          document.querySelector("#rider").textContent = '현재 운행중인 라이더 수 : ' + json[2].count;
+
+        };
+        xhr.send();
+        },1000);
+
+
+    </script>
+  </head>
+  <body style="background-color: #F1F4F9;" >
+    <div>
+      <div style="text-align:center; padding: 20px;">
+        <img src="logo.png">
+      </div>
+    </div>
+    <div >
+      <div id="nav" style='height: 700px; float:left; background-color: white; margin-left: 10px; margin-right: 20px; padding: 10px; border-radius: 10px;'>
+
+      <br>
+
+      <li id = "proceeding">진행중인 배달 건수 : </li>
+      <li id = "completed">오늘 완료한 배달 건수 : </li>
+      <li id = "rider">현재 운행중인 라이더 수 : </li>
+      <br>
+
+        <script type="text/javascript">
+          var new_tbody = document.createElement('tbody');
+          const requestURL2 = 'http://speelow.ivyro.net/riderList.php/';
+          const xhr2 = new XMLHttpRequest();
+          var json2;
+          setInterval(function() {
+
+          xhr2.open('GET', requestURL2);
+          xhr2.onload = () => {
+            const table = new_tbody;
+            document.getElementById('nav').appendChild(table);
+            table.innerHTML = "<th>ID</th><th>이름</th><th>전화번호</th><th>활동</th>";
+
+            json2 = JSON.parse(xhr2.response);
+            json2.forEach(element => {
+              const new_row = table.insertRow();
+              const newCell1 = new_row.insertCell(0);
+              const newCell2 = new_row.insertCell(1);
+              const newCell3 = new_row.insertCell(2);
+              const newCell4 = new_row.insertCell(3);
+
+              newCell1.innerText = element.userId;
+              newCell2.innerText = element.userName;
+              newCell3.innerText = element.userPhoneNum;
+              newCell4.innerText = element.activate;
+              if(element.activate == "true"){
+                newCell4.style.backgroundColor = '#6DA5FF';
+              }
+              });
+          };
+
+          xhr2.send();
+        },1000);
+        </script>
+      </table>
+
+      </div>
+      <div id="map" style="height: 700px; margin-left: 10px; margin-right: 10px; padding: 10px; border-radius: 10px;"></div>
+    </div>
+  </body>
+</html>
